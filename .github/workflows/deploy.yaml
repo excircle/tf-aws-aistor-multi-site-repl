@@ -109,7 +109,7 @@ jobs:
 
       - name: Initialize Multi-Site Repl VPC (Terraform)
         working-directory: ./terraform/
-        run: export TF_PLUGIN_CACHE_DIR=${{ env.TF_PLUGIN_CACHE_DIR }}; terraform init -backend-config="bucket=${TF_S3_BUCKET}" -backend-config="key=${TF_S3_KEY}" -backend-config="region=${AWS_DEFAULT_REGION}"
+        run: terraform init -backend-config="bucket=${TF_S3_BUCKET}" -backend-config="key=${TF_S3_KEY}" -backend-config="region=${AWS_DEFAULT_REGION}"
 
       - name: Destroy Disks 
         working-directory: ./terraform/
