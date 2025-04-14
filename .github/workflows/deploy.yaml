@@ -69,3 +69,56 @@ jobs:
       - name: Initialize Multi-Site Repl VPC (Terraform)
         working-directory: ./terraform/
         run: export TF_PLUGIN_CACHE_DIR=${{ env.TF_PLUGIN_CACHE_DIR }}; terraform init -backend-config="bucket=${TF_S3_BUCKET}" -backend-config="key=${TF_S3_KEY}" -backend-config="region=${AWS_DEFAULT_REGION}"
+
+      - name: Apply MinIO VPC & Nodes
+        working-directory: ./terraform/k8s-cluster
+        run: terraform apply -target=module.minio-vpc-west-2 -target=module.minio-us-west-2-cluster1 -target=module.minio-us-west-2-cluster2 -target=module.minio-us-west-2-cluster3 -auto-approve -var="sshkey=$(echo "${{ secrets.SSHKEY }}" | base64 --decode)"
+
+      - name: Apply K8s Disks
+        working-directory: ./terraform/k8s-cluster
+        run: terraform apply -target=module.minio-west-2-cluster1-disks -target=module.minio-west-2-cluster2-disks -target=module.minio-west-2-cluster3-disks -auto-approve -var="sshkey=$(echo "${{ secrets.SSHKEY }}" | base64 --decode)"
+
+
+  destroy:
+    needs: set-condition
+    if: needs.set-condition.outputs.run-job == 'true'
+    runs-on: ubuntu-latest
+    env:
+      AWS_DEFAULT_REGION: "us-west-2"
+      TF_S3_BUCKET: "minio-terraform-state041125"
+      TF_S3_KEY: "terraform.tfstate"
+    steps:
+      - name: Configure AWS credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set region $AWS_DEFAULT_REGION
+          
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main #<- Define the branch you wish to use.
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
+
+      - name: Initialize Multi-Site Repl VPC (Terraform)
+        working-directory: ./terraform/
+        run: export TF_PLUGIN_CACHE_DIR=${{ env.TF_PLUGIN_CACHE_DIR }}; terraform init -backend-config="bucket=${TF_S3_BUCKET}" -backend-config="key=${TF_S3_KEY}" -backend-config="region=${AWS_DEFAULT_REGION}"
+
+      - name: Destroy Disks 
+        working-directory: ./terraform/
+        run: terraform destroy -target=module.minio-west-2-cluster1-disks -target=module.minio-west-2-cluster2-disks -target=module.minio-west-2-cluster3-disks -var="sshkey=$(echo "${{ secrets.SSHKEY }}" | base64 --decode)" -auto-approve -lock=false
+
+      - name: Destroy Nodes
+        working-directory: ./terraform/k8s-cluster
+        run: terraform destroy -target=module.minio-us-west-2-cluster1 -target=module.minio-us-west-2-cluster2 -target=module.minio-us-west-2-cluster3 -var="sshkey=$(echo "${{ secrets.SSHKEY }}" | base64 --decode)" -auto-approve -lock=false
+
+      - name: Destroy VPC
+        working-directory: ./terraform/k8s-cluster
+        run: terraform destroy -target=module.minio-vpc-west-2 -var="sshkey=$(echo "${{ secrets.SSHKEY }}" | base64 --decode)" -auto-approve -lock=false
