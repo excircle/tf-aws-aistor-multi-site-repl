@@ -4,5 +4,6 @@
 	"PA_TOKEN":"github_pat_11AOX3SUmME8S292_Zz2ohdf74jdVqMwUrq1XsEONpZ0FPcwNsLut7pIGK344G3MKpYLectXJ",
 	"PRIVATE_SSHKEY":"/Users/user/.ssh/sre-key",
     "PUBLIC_SSHKEY":"/Users/user/.ssh/sre-key.pub",
-    "GHA_REPO": "excircle/tf-aws-aistor-multi-site-repl"
+    "GHA_REPO": "excircle/tf-aws-aistor-multi-site-repl",
+	"MINIO_LICENSE": "ey37ehjdie8ijfid9dek"
 }

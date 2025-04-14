@@ -152,6 +152,25 @@ function write-to-github() {
         echo "[SUCCESS]: PUBLIC_SSHKEY secret set successfully."
     fi
 
+    # Write MINIO_LICENSE repository secret
+    MINIO_LICENSE=$(jq -r '.MINIO_LICENSE' target.json)
+    if [ -z "$MINIO_LICENSE" ]; then
+        echo "[ERROR]: MINIO_LICENSE path is not set in target.json."
+        exit 1
+    else
+        gh secret set MINIO_LICENSE -b "$MINIO_LICENSE"
+        if [ $? -ne 0 ]; then
+            echo "[ERROR]: Failed to set MINIO_LICENSE secret. Please check permissions."
+            exit 1
+        else 
+            echo "[SUCCESS]: MINIO_LICENSE secret set successfully."
+        fi
+    fi
+
+
+
+
+
 }
 
 function main() {
