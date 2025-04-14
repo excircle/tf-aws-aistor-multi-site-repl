@@ -72,11 +72,11 @@ jobs:
 
       - name: Apply MinIO VPC & Nodes
         working-directory: ./terraform/
-        run: terraform apply -target=module.minio-vpc-west-2 -target=module.minio-us-west-2-cluster1 -target=module.minio-us-west-2-cluster2 -target=module.minio-us-west-2-cluster3 -auto-approve -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }}
+        run: terraform apply -target=module.minio-vpc-west-2 -target=module.minio-us-west-2-cluster1 -target=module.minio-us-west-2-cluster2 -target=module.minio-us-west-2-cluster3 -auto-approve -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }}"
 
       - name: Apply K8s Disks
         working-directory: ./terraform/
-        run: terraform apply -target=module.minio-west-2-cluster1-disks -target=module.minio-west-2-cluster2-disks -target=module.minio-west-2-cluster3-disks -auto-approve -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }}
+        run: terraform apply -target=module.minio-west-2-cluster1-disks -target=module.minio-west-2-cluster2-disks -target=module.minio-west-2-cluster3-disks -auto-approve -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }}"
 
 
   destroy:
@@ -113,11 +113,11 @@ jobs:
 
       - name: Destroy Disks 
         working-directory: ./terraform/
-        run: terraform destroy -target=module.minio-west-2-cluster1-disks -target=module.minio-west-2-cluster2-disks -target=module.minio-west-2-cluster3-disks -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }} -auto-approve -lock=false
+        run: terraform destroy -target=module.minio-west-2-cluster1-disks -target=module.minio-west-2-cluster2-disks -target=module.minio-west-2-cluster3-disks -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }}" -auto-approve -lock=false
 
       - name: Destroy Nodes
         working-directory: ./terraform/
-        run: terraform destroy -target=module.minio-us-west-2-cluster1 -target=module.minio-us-west-2-cluster2 -target=module.minio-us-west-2-cluster3 -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }} -auto-approve -lock=false
+        run: terraform destroy -target=module.minio-us-west-2-cluster1 -target=module.minio-us-west-2-cluster2 -target=module.minio-us-west-2-cluster3 -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }}" -auto-approve -lock=false
 
       - name: Destroy VPC
         working-directory: ./terraform/
