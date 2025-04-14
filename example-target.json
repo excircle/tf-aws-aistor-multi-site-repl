@@ -1,0 +1,8 @@
+{
+	"AWS_ACCESS_KEY_ID":"AKIAmmmmmmmEDTM3L7D",
+	"AWS_SECRET_ACCESS_KEY":"PsvseKv/f6kgGb3kkkkkkOm0zF4yYHOFkWir",
+	"PA_TOKEN":"github_pat_11AOX3SUmME8S292_Zz2ohdf74jdVqMwUrq1XsEONpZ0FPcwNsLut7pIGK344G3MKpYLectXJ",
+	"PRIVATE_SSHKEY":"/Users/user/.ssh/sre-key",
+    "PUBLIC_SSHKEY":"/Users/user/.ssh/sre-key.pub",
+    "GHA_REPO": "excircle/tf-aws-aistor-multi-site-repl"
+}
