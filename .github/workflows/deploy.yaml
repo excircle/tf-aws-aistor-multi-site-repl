@@ -71,11 +71,11 @@ jobs:
         run: export TF_PLUGIN_CACHE_DIR=${{ env.TF_PLUGIN_CACHE_DIR }}; terraform init -backend-config="bucket=${TF_S3_BUCKET}" -backend-config="key=${TF_S3_KEY}" -backend-config="region=${AWS_DEFAULT_REGION}"
 
       - name: Apply MinIO VPC & Nodes
-        working-directory: ./terraform/k8s-cluster
+        working-directory: ./terraform/
         run: terraform apply -target=module.minio-vpc-west-2 -target=module.minio-us-west-2-cluster1 -target=module.minio-us-west-2-cluster2 -target=module.minio-us-west-2-cluster3 -auto-approve -var="sshkey=$(echo "${{ secrets.SSHKEY }}" | base64 --decode)"
 
       - name: Apply K8s Disks
-        working-directory: ./terraform/k8s-cluster
+        working-directory: ./terraform/
         run: terraform apply -target=module.minio-west-2-cluster1-disks -target=module.minio-west-2-cluster2-disks -target=module.minio-west-2-cluster3-disks -auto-approve -var="sshkey=$(echo "${{ secrets.SSHKEY }}" | base64 --decode)"
 
 
@@ -116,9 +116,9 @@ jobs:
         run: terraform destroy -target=module.minio-west-2-cluster1-disks -target=module.minio-west-2-cluster2-disks -target=module.minio-west-2-cluster3-disks -var="sshkey=$(echo "${{ secrets.SSHKEY }}" | base64 --decode)" -auto-approve -lock=false
 
       - name: Destroy Nodes
-        working-directory: ./terraform/k8s-cluster
+        working-directory: ./terraform/
         run: terraform destroy -target=module.minio-us-west-2-cluster1 -target=module.minio-us-west-2-cluster2 -target=module.minio-us-west-2-cluster3 -var="sshkey=$(echo "${{ secrets.SSHKEY }}" | base64 --decode)" -auto-approve -lock=false
 
       - name: Destroy VPC
-        working-directory: ./terraform/k8s-cluster
+        working-directory: ./terraform/
         run: terraform destroy -target=module.minio-vpc-west-2 -var="sshkey=$(echo "${{ secrets.SSHKEY }}" | base64 --decode)" -auto-approve -lock=false
