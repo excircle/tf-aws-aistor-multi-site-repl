@@ -121,4 +121,4 @@ jobs:
 
       - name: Destroy VPC
         working-directory: ./terraform/
-        run: terraform destroy -target=module.minio-vpc-west-2 -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }} -auto-approve -lock=false
+        run: terraform destroy -target=module.minio-vpc-west-2 -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }}" -auto-approve -lock=false
