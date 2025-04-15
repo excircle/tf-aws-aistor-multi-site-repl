@@ -3,6 +3,12 @@
 # Set the AWS region to us-west-2 for all AWS CLI commands
 AWS_REGION="us-west-2"
 
+# Wait for 'mc' utility to be installed.
+while ! [ -f "/usr/local/bin/mc" ]; do
+	echo "not here"
+	sleep 1;
+done;
+
 # Retrieve the public IP address for each MinIO instance
 MINIO1=$(aws ec2 describe-instances --region "$AWS_REGION" \
     --filters "Name=tag:Name,Values=minio-us-west-2-cluster1-1" \
