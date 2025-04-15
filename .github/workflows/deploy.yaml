@@ -28,6 +28,7 @@ jobs:
       AWS_DEFAULT_REGION: "us-west-2"
       TF_S3_BUCKET: "minio-terraform-state041125"
       TF_S3_KEY: "terraform.tfstate"
+      KEY_FILE: "/home/runner/sre-key"
     steps:
       - name: Configure AWS credentials
         env:
@@ -74,9 +75,28 @@ jobs:
         working-directory: ./terraform/
         run: terraform apply -target=module.minio-vpc-west-2 -target=module.minio-us-west-2-cluster1 -target=module.minio-us-west-2-cluster2 -target=module.minio-us-west-2-cluster3 -auto-approve -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }}"
 
-      - name: Apply K8s Disks
+      - name: Apply MinIO Disks
         working-directory: ./terraform/
         run: terraform apply -target=module.minio-west-2-cluster1-disks -target=module.minio-west-2-cluster2-disks -target=module.minio-west-2-cluster3-disks -auto-approve -var="sshkey=$(echo "${{ secrets.PUBLIC_SSHKEY }}" | base64 --decode)" -var="minio_license=${{ secrets.MINIO_LICENSE }}"
+
+      - name: Decode SSH key
+        run: |
+          base64 -d <<< '${{ secrets.PRIVATE_SSHKEY }}' > ${{ env.KEY_FILE }}
+          chmod 0600 ${{ env.KEY_FILE }}
+
+      - name: Validate SSH key
+        run: ssh-keygen -l -f ${{ env.KEY_FILE }}
+        
+      - name: Obtain the Public IP of cluster1-1
+        run: |
+          echo "cluster1=$(aws ec2 describe-instances --region us-west-2 \
+          --filters "Name=tag:Name,Values=minio-us-west-2-cluster1-1" \
+          --query "Reservations[*].Instances[*].PublicIpAddress" \
+          --output text)" >> $GITHUB_ENV
+
+      - name: Call replicate.sh on cluster1-1
+        run: ssh -i ${{ env.KEY_FILE }} -o StrictHostKeyChecking=no ubuntu@${{ env.cluster1 }} "curl -sL https://raw.githubusercontent.com/excircle/tf-aws-aistor-multi-site-repl/main/replicate.sh | /bin/bash"
+  
 
 
   destroy:
