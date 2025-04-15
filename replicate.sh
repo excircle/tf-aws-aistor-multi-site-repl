@@ -5,7 +5,7 @@ AWS_REGION="us-west-2"
 
 # Wait for 'mc' utility to be installed.
 while ! [ -f "/usr/local/bin/mc" ]; do
-	echo "not here"
+	echo "'mc' not here"
 	sleep 1;
 done;
 
@@ -24,6 +24,20 @@ MINIO3=$(aws ec2 describe-instances --region "$AWS_REGION" \
     --filters "Name=tag:Name,Values=minio-us-west-2-cluster3-1" \
     --query "Reservations[*].Instances[*].PublicIpAddress" \
     --output text)
+
+# Wait for 'minio' utility to be installed.
+while ! [ -f "/usr/local/bin/minio" ]; do
+	echo "'minio' not here"
+	sleep 1;
+done;
+
+# Ensure script is finished
+while ! tail -n 1 /var/log/cloud-init-output.log | grep -q 'finished'; do
+    echo "Bootstrap not finished"
+    sleep 1
+done
+
+echo "Bootstrap finished"
 
 # Set the minio aliases using the 'mc alias set' command.
 mc alias set minio1 http://$MINIO1:9000 miniominio miniominio
