@@ -36,7 +36,7 @@ module "minio-us-west-2-cluster1" {
 
   application_name          = "minio-us-west-2-cluster1"
   system_user               = "ubuntu"
-  hosts                     = 2                                     # Number of nodes with MinIO installed
+  hosts                     = 6                                     # Number of nodes with MinIO installed
   vpc_id                    = module.minio-vpc-west-2.vpc_id
   minio_license             = var.minio_license                     # Required only if using: minio_flavor = "aistor"
   minio_flavor              = "aistor"
@@ -49,7 +49,7 @@ module "minio-us-west-2-cluster1" {
   ec2_ami_image             = "ami-0606dd43116f5ed57"               # (ami-0884d2865dbe9de4b) Ubuntu 22.04 - us-west-2
   az_count                  = 2                                     # Number of AZs to use
   subnets                   = module.minio-vpc-west-2.subnets
-  num_disks                 = 2                                     # Creates a number of disks
+  num_disks                 = 16                                     # Creates a number of disks
   sshkey                    = var.sshkey                            # Use env variables | export TF_VAR_sshkey=$(cat ~/.ssh/your-key-name.pub)
   ec2_key_name              = "sshkey"
   package_manager           = "apt"
